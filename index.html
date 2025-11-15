@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SnackMania</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <h1>SnackMania</h1>
+  <p>Cemilan murah, enak, dan kekinian! 👌</p>
+</header>
+
+<section class="products">
+
+  <div class="card">
+    <img src="./assets/products/product1.jpg" alt="">
+    <h3>Keripik Pedas</h3>
+    <span class="price">8000</span>
+    <button onclick="addToCart('Keripik Pedas', 8000)">Tambah</button>
+  </div>
+
+  <div class="card">
+    <img src="./assets/products/product2.jpg" alt="">
+    <h3>Basreng Ori</h3>
+    <span class="price">5000</span>
+    <button onclick="addToCart('Basreng Ori', 5000)">Tambah</button>
+  </div>
+
+  <div class="card">
+    <img src="./assets/products/product3.jpg" alt="">
+    <h3>Makaroni Pedas</h3>
+    <span class="price">3000</span>
+    <button onclick="addToCart('Makaroni Pedas', 3000)">Tambah</button>
+  </div>
+
+  <div class="card">
+    <img src="./assets/products/product4.jpg" alt="">
+    <h3>Mix Snack Jumbo</h3>
+    <span class="price">10000</span>
+    <button onclick="addToCart('Mix Snack Jumbo', 10000)">Tambah</button>
+  </div>
+
+</section>
+
+<!-- Floating Cart Button -->
+<div id="cartButton" onclick="toggleCart()">
+  🛒 Keranjang <span id="cartCount">0</span>
+</div>
+
+<!-- Cart Modal -->
+<div id="cartModal">
+  <h2>Keranjang Belanja</h2>
+  <ul id="cartItems"></ul>
+  <p style="text-align:center;font-weight:600;font-size:15px;margin-top:4px;">
+    Total: Rp <span id="totalPrice">0</span>
+  </p>
+
+
+
+
+<!-- Input Nama -->
+<div class="input-group">
+    <label>Nama Pembeli:</label>
+    <input type="text" id="buyerName" placeholder="Masukkan nama Anda">
+  </div>
+  
+  <!-- Metode Pembayaran -->
+  <div class="input-group">
+    <label>Metode Pembayaran:</label>
+    <select id="paymentMethod">
+        <option value="">-- Pilih metode pembayaran --</option>
+        <option value="CASH">CASH</option>
+        <option value="TRANSFER BANK">TRANSFER BANK</option>
+        <option value="QRIS">QRIS</option>
+        <option value="DANA">DANA</option>
+        <option value="OVO">OVO</option>
+        <option value="GOPAY">GOPAY</option>
+        <option value="SHOPEE PAY">SHOPEE PAY</option>
+    </select>
+  </div>
+
+
+
+  <label class="label-note">Catatan Pembeli (opsional)</label>
+  <textarea id="buyerNote" placeholder="Contoh: Level pedas sedang, packing bubble wrap, dll..."></textarea>
+
+
+
+
+  
+  <button onclick="checkout()">Checkout</button>
+  <button onclick="toggleCart()" style="background:#e63946;margin-top:6px;">Tutup</button>
+</div>
+
+
+
+
+<footer class="footer">
+    <p>© 2025 Web By Divzz.</p>
+  </footer>  
+
+
+
+
+
+<script src="script.js"></script>
+</body>
+</html>

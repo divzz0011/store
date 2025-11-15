@@ -1,0 +1,245 @@
+/* ===== Global Reset ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: "Poppins", sans-serif;
+    background: #fafafa;
+    color: #333;
+    line-height: 1.4;
+  }
+  
+  /* ===== Header ===== */
+  header {
+    background: linear-gradient(135deg, #ff9e00, #ff6f00);
+    text-align: center;
+    padding: 28px 15px;
+    color: white;
+  }
+  
+  header h1 {
+    font-size: 28px;
+    margin-bottom: 6px;
+  }
+  
+  /* ===== Products Section ===== */
+  .products {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 18px;
+  }
+  
+  /* ===== Card Style ===== */
+  .card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 14px;
+    box-shadow: 0px 6px 14px rgba(0,0,0,0.08);
+    transition: transform .25s ease, box-shadow .25s ease;
+    text-align: center;
+  }
+  
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0px 12px 20px rgba(0,0,0,0.12);
+  }
+  
+  .card img {
+    width: 100%;
+    height: 150px;
+    border-radius: 12px;
+    object-fit: cover;
+  }
+  
+  .card h3 {
+    font-size: 16px;
+    margin: 10px 0 5px;
+  }
+  
+  .price {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e63946;
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  /* ===== Button ===== */
+  .card button {
+    width: 100%;
+    padding: 8px;
+    background: #ff6f00;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: .25s ease;
+  }
+  
+  .card button:hover {
+    background: #e65d00;
+    transform: scale(1.04);
+  }
+  
+  /* ===== Floating Cart ===== */
+  #cartButton {
+    position: fixed;
+    bottom: 22px;
+    right: 22px;
+    background: #2ec4b6;
+    color: white;
+    padding: 14px 18px;
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 999;
+    transition: .25s;
+  }
+  
+  #cartButton:hover {
+    background: #249e92;
+    transform: scale(1.05);
+  }
+  
+  #cartButton span {
+    background: #fff;
+    color: #2ec4b6;
+    padding: 3px 8px;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 13px;
+  }
+  
+  /* ===== Cart Modal ===== */
+  #cartModal {
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    box-shadow: 0px -10px 25px rgba(0,0,0,0.20);
+    padding: 18px;
+    transition: bottom .35s ease-in-out;
+    z-index: 999;
+  }
+  
+  #cartModal.active {
+    bottom: 0;
+  }
+  
+  #cartModal h2 {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  
+  #cartItems {
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 3px;
+  }
+  
+  #cartModal li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #e6e6e6;
+    font-size: 14px;
+  }
+  
+  #cartModal button {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background: #2ec4b6;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: .25s;
+  }
+  
+  #cartModal button:hover {
+    background: #249e92;
+  }
+  
+
+
+
+
+
+
+
+
+
+
+  .input-group {
+    margin-top: 10px;
+  }
+  
+  .input-group input, .input-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 5px;
+  }
+  
+
+
+
+
+
+
+
+
+
+  .footer {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 25px;
+    color: #666;
+  }
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+  #buyerNote {
+    width: 100%;
+    height: 60px;
+    margin-top: 8px;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    resize: none;
+  }
+  
+  .label-note {
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 6px;
+    display: block;
+  }
+  
