@@ -1,5 +1,5 @@
 let cart = [];
-let phone = "6281818160724"; // ganti ke nomor WA asli
+let phone = "6283879457407"; // ganti ke nomor WA asli
 
 function addToCart(name, price) {
   let item = cart.find(x => x.name === name);
@@ -88,3 +88,4 @@ function checkout() {
 
 
   
+
