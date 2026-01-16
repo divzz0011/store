@@ -7,7 +7,6 @@
   
   body {
     font-family: "Poppins", sans-serif;
-    /* Warna latar belakang putih krem lembut seperti susu */
     background: #fdfaf5; 
     color: #2d2d2d;
     line-height: 1.4;
@@ -16,7 +15,6 @@
   /* ===== Header dengan Motif Sapi ===== */
   header {
     background-color: #ffffff;
-    /* Membuat motif bercak sapi menggunakan gradient */
     background-image: 
         radial-gradient(circle at 15% 25%, #222 10%, transparent 11%),
         radial-gradient(circle at 45% 15%, #222 14%, transparent 15%),
@@ -28,7 +26,7 @@
     text-align: center;
     padding: 45px 15px;
     color: white;
-    border-bottom: 8px solid #4caf50; /* Aksen hijau rumput */
+    border-bottom: 8px solid #4caf50; 
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   }
   
@@ -57,11 +55,12 @@
     background: #fff;
     border-radius: 20px;
     padding: 16px;
-    /* Border putus-putus memberikan kesan estetik peternakan */
     border: 2px dashed #e0e0e0;
     box-shadow: 0px 6px 14px rgba(0,0,0,0.05);
     transition: all .3s ease;
     text-align: center;
+    display: flex;
+    flex-direction: column;
   }
   
   .card:hover {
@@ -70,12 +69,16 @@
     box-shadow: 0px 12px 20px rgba(76, 175, 80, 0.15);
   }
   
+  /* PENGATURAN GAMBAR 1:1 */
   .card img {
     width: 100%;
-    height: 160px;
+    /* Mengunci rasio menjadi persegi (1:1) */
+    aspect-ratio: 1 / 1; 
     border-radius: 15px;
-    object-fit: cover;
+    /* Mengisi area tanpa merusak proporsi gambar */
+    object-fit: cover; 
     background: #f9f9f9;
+    margin-bottom: 5px;
   }
   
   .card h3 {
@@ -87,15 +90,16 @@
   .price {
     font-size: 16px;
     font-weight: 700;
-    color: #4caf50; /* Harga warna hijau */
+    color: #4caf50;
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    margin-top: auto; /* Mendorong harga ke bawah agar sejajar */
   }
   
-  /* ===== Button (Hitam Sapi) ===== */
+  /* ===== Button ===== */
   .card button {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     background: #222;
     color: white;
     border: none;
@@ -111,7 +115,7 @@
     transform: scale(1.03);
   }
   
-  /* ===== Floating Cart (Hijau Rumput) ===== */
+  /* ===== Floating Cart ===== */
   #cartButton {
     position: fixed;
     bottom: 25px;
@@ -129,11 +133,6 @@
     gap: 10px;
     z-index: 999;
     border: 2px solid #fff;
-  }
-  
-  #cartButton:hover {
-    background: #388e3c;
-    transform: translateY(-3px);
   }
   
   #cartButton span {
@@ -168,8 +167,6 @@
     text-align: center;
     margin-bottom: 15px;
     font-weight: 700;
-    border-bottom: 2px solid #f0f0f0;
-    padding-bottom: 10px;
   }
   
   #cartItems li {
@@ -177,8 +174,6 @@
     justify-content: space-between;
     padding: 10px 0;
     border-bottom: 1px solid #eee;
-    font-size: 14px;
-    font-weight: 500;
   }
   
   #cartModal button {
@@ -191,7 +186,6 @@
     color: white;
     font-size: 15px;
     font-weight: 600;
-    cursor: pointer;
   }
   
   /* ===== Input Fields ===== */
@@ -201,12 +195,6 @@
     border: 2px solid #eee;
     border-radius: 12px;
     margin-top: 5px;
-    font-family: inherit;
-  }
-  
-  .input-group input:focus, #buyerNote:focus {
-    border-color: #4caf50;
-    outline: none;
   }
   
   /* ===== Footer ===== */
@@ -229,5 +217,4 @@
     font-weight: 600;
     margin-top: 12px;
     display: block;
-    color: #555;
-      }
+  }
