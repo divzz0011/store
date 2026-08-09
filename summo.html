@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Summo - Susu Murni Segar</title>
+  <link rel="stylesheet" href="summo.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <div class="header-content">
+    <h1>🥛 Summo</h1>
+    <p>Es Susu Murni Berbagai Varian Rasa</p>
+  </div>
+</header>
+
+<section class="products">
+  <div class="card best-seller">
+    <span class="badge">🔥 Best Seller</span>
+    <img src="./assets/product/product1.jpg" alt="Coklat">
+    <h3>Rasa Coklat</h3>
+    <span class="price">2.500</span>
+    <button onclick="addToCart('Rasa Coklat', 2500)">Tambah</button>
+  </div>
+
+  <div class="card best-seller">
+    <span class="badge">🔥 Best Seller</span>
+    <img src="./assets/product/product2.jpg" alt="Matcha">
+    <h3>Rasa Matcha</h3>
+    <span class="price">2.500</span>
+    <button onclick="addToCart('Rasa Matcha', 2500)">Tambah</button>
+  </div>
+
+  <div class="card">
+    <img src="./assets/product/product3.jpg" alt="Keju">
+    <h3>Rasa Keju</h3>
+    <span class="price">2.500</span>
+    <button onclick="addToCart('Rasa Keju', 2500)">Tambah</button>
+  </div>
+
+  <div class="card">
+    <img src="./assets/product/product4.jpg" alt="Cappucino">
+    <h3>Rasa Cappucino</h3>
+    <span class="price">2.500</span>
+    <button onclick="addToCart('Rasa Cappucino', 2500)">Tambah</button>
+  </div>
+
+  <div class="card">
+    <img src="./assets/product/product5.jpg" alt="Taro">
+    <h3>Rasa Taro</h3>
+    <span class="price">2.500</span>
+    <button onclick="addToCart('Rasa Taro', 2500)">Tambah</button>
+  </div>
+
+  <div class="card">
+    <img src="./assets/product/product6.jpg" alt="Tiramisu">
+    <h3>Rasa Tiramisu</h3>
+    <span class="price">2.500</span>
+    <button onclick="addToCart('Rasa Tiramisu', 2500)">Tambah</button>
+  </div>
+
+  <div class="card">
+    <img src="./assets/product/product7.jpg" alt="Strawberry">
+    <h3>Rasa Strawberry</h3>
+    <span class="price">2.500</span>
+    <button onclick="addToCart('Rasa Strawberry', 2500)">Tambah</button>
+  </div>
+
+  <div class="card">
+    <img src="./assets/product/product8.jpg" alt="Vanila">
+    <h3>Rasa Vanila</h3>
+    <span class="price">2.500</span>
+    <button onclick="addToCart('Rasa Vanila', 2500)">Tambah</button>
+  </div>
+</section>
+
+<div id="cartButton" onclick="toggleCart()">
+  🛒 Keranjang <span id="cartCount">0</span>
+</div>
+
+<div id="modalOverlay" onclick="toggleCart()"></div>
+
+<div id="cartModal">
+  <h2>Keranjang Belanja</h2>
+  <ul id="cartItems"></ul>
+  
+  <div class="cart-summary">
+    <p>Total: <strong>Rp <span id="totalPrice">0</span></strong></p>
+  </div>
+
+  <div class="input-form">
+    <div class="input-group">
+      <label>Nama Pembeli:</label>
+      <input type="text" id="buyerName" placeholder="Masukkan nama Anda">
+    </div>
+    
+    <div class="input-group">
+      <label>Metode Pembayaran:</label>
+      <select id="paymentMethod">
+          <option value="">-- Pilih metode pembayaran --</option>
+          <option value="CASH">CASH</option>
+          <option value="TRANSFER BANK">TRANSFER BANK</option>
+          <option value="QRIS">QRIS</option>
+          <option value="DANA">DANA</option>
+          <option value="OVO">OVO</option>
+          <option value="GOPAY">GOPAY</option>
+          <option value="SHOPEE PAY">SHOPEE PAY</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>Catatan Pembeli (opsional):</label>
+      <textarea id="buyerNote" placeholder="Contoh: Kurangi gula / Alamat pengiriman"></textarea>
+    </div>
+  </div>
+  
+  <button class="btn-checkout" onclick="checkout()">Checkout via WhatsApp</button>
+  <button class="btn-close" onclick="toggleCart()">Tutup</button>
+</div>
+
+<footer class="footer">
+    <p>© 2026 Web By Divzz. | Summo 🥛</p>
+</footer>   
+
+<script src="summo.js"></script>
+</body>
+</html>

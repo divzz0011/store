@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Man Cell - Order Pulsa, Data & Topup</title>
+    <!-- Tailwind CSS & FontAwesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .pulse-dot { animation: pulse-ring 2s infinite ease-in-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-100 via-purple-50 to-blue-100 min-h-screen text-slate-800 pb-12 relative">
+
+    <!-- Header Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-indigo-100">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 font-bold text-xl text-indigo-900">
+                <i class="fa-solid fa-asterisk text-indigo-600"></i>
+                <span>Man Cell</span>
+            </a>
+            
+            <div class="flex items-center gap-3">
+                <!-- Badge Admin Online -->
+                <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full text-xs font-semibold text-emerald-700">
+                    <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full pulse-dot"></span>
+                    <span>Admin Online</span>
+                </div>
+
+                <a href="index.html" class="text-sm text-slate-600 hover:text-indigo-600 font-medium transition ml-2">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Kembali
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        
+        <!-- Header Title -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-5xl font-black text-indigo-950 tracking-tight">MAN CELL PRICE LIST</h1>
+            <p class="text-slate-600 mt-2 max-w-xl mx-auto text-sm md:text-base">
+                Solusi cepat topup paket data, pulsa, saldo e-wallet, transfer, tukar cash, dan bayar tagihan.
+            </p>
+        </div>
+
+        <!-- Section Form Pemesanan -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left: Form Input -->
+            <div class="lg:col-span-2 bg-white rounded-3xl p-6 md:p-8 shadow-lg border border-slate-100 space-y-6">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-cart-plus text-indigo-600"></i> Buat Pesanan Baru
+                    </h2>
+                    <button type="button" onclick="resetForm()" class="text-xs text-rose-500 hover:text-rose-700 font-semibold flex items-center gap-1 transition">
+                        <i class="fa-solid fa-rotate-left"></i> Reset Form
+                    </button>
+                </div>
+
+                <!-- Step 1: Kategori -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">1. Pilih Kategori Layanan</label>
+                    <select id="category" onchange="updateSubCategories()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="">-- Pilih Kategori --</option>
+                        <option value="Pulsa / Paket Data">Pulsa / Paket Data</option>
+                        <option value="Top Up E-Wallet">Top Up E-Wallet</option>
+                        <option value="Top Up Game">Top Up Game</option>
+                        <option value="Tukar Cash / Transfer / Tagihan">Tukar Cash / Transfer / Tagihan</option>
+                    </select>
+                </div>
+
+                <!-- Step 2: Layanan / Provider -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-sm font-semibold text-slate-700">2. Pilih Provider / Layanan</label>
+                        <span id="autoDetectBadge" class="hidden text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-md font-bold">Auto-Detected</span>
+                    </div>
+                    <select id="provider" onchange="calculateAdminFee()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="">-- Pilih Kategori Terlebih Dahulu --</option>
+                    </select>
+                </div>
+
+                <!-- Step 3: Nomor / ID Tujuan -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">3. Nomor HP / ID Game / Rekening Tujuan</label>
+                    <input type="text" id="targetInput" placeholder="Contoh: 08381234xxxx / 12345678" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <p id="targetError" class="text-xs text-rose-500 mt-1 font-semibold hidden"><i class="fa-solid fa-circle-exclamation"></i> Nomor HP terlalu pendek (minimal 10 digit).</p>
+                </div>
+
+                <!-- Optional Step: Server ID / Nickname Game -->
+                <div id="gameExtraField" class="hidden">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">3b. Nickname / Server ID Game (Khusus Topup Game)</label>
+                    <input type="text" id="nicknameInput" placeholder="Contoh: Nickname (1234)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+
+                <!-- Step 4: Custom Nominal Input dengan Peringatan Minimal Transaksi -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">4. Masukkan Nominal Saldo / Top Up</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3.5 text-sm font-bold text-slate-400">Rp</span>
+                        <input type="text" id="customNominal" placeholder="Ketik nominal (Contoh: 15.000, 50.000)" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-semibold">
+                    </div>
+                    <!-- Peringatan Minimal Transaksi -->
+                    <p id="minNominalWarning" class="text-xs text-rose-500 mt-1 font-semibold hidden">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Minimal transaksi adalah Rp 5.000.
+                    </p>
+                </div>
+
+                <!-- Step 5: Promo Code Input -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">5. Kode Promo / Diskon (Opsional)</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="promoInput" placeholder="Ketik kode promo" class="uppercase w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <button type="button" onclick="applyPromo()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-5 rounded-xl transition">Gunakan</button>
+                    </div>
+                    <p id="promoMsg" class="text-xs mt-1 font-semibold hidden"></p>
+                </div>
+
+                <!-- Step 6: Catatan Tambahan -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">6. Catatan Tambahan (Opsional)</label>
+                    <textarea id="notesInput" rows="2" placeholder="Contoh: Paket Data 30 Hari, pesan khusus..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none resize-none"></textarea>
+                </div>
+
+                <!-- Step 7: Metode Pembayaran -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">7. Metode Pembayaran</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <label class="cursor-pointer border border-slate-200 p-3 rounded-xl flex items-center gap-2 hover:bg-slate-50">
+                            <input type="radio" name="payment" value="QRIS" onchange="calculateAdminFee()" class="accent-indigo-600">
+                            <span class="text-xs font-semibold text-slate-700">QRIS</span>
+                        </label>
+                        <label class="cursor-pointer border border-slate-200 p-3 rounded-xl flex items-center gap-2 hover:bg-slate-50">
+                            <input type="radio" name="payment" value="Transfer Bank / E-Wallet" onchange="calculateAdminFee()" class="accent-indigo-600">
+                            <span class="text-xs font-semibold text-slate-700">Transfer Bank</span>
+                        </label>
+                        <label class="cursor-pointer border border-slate-200 p-3 rounded-xl flex items-center gap-2 hover:bg-slate-50">
+                            <input type="radio" name="payment" value="Cash / Tunai" onchange="calculateAdminFee()" class="accent-indigo-600">
+                            <span class="text-xs font-semibold text-slate-700">Cash / Tunai</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Admin Fee Info -->
+                <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-amber-600 text-base"></i>
+                    <span>Admin: Pulsa/Topup/Transfer (Rp 3.000), Tukar Cash/Tagihan (Rp 2.500). Minimal Order Rp 5.000.</span>
+                </div>
+            </div>
+
+            <!-- Right: Ringkasan Keranjang -->
+            <div class="bg-white rounded-3xl p-6 shadow-lg border border-slate-100 flex flex-col justify-between h-fit sticky top-24">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 border-b pb-3 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-receipt text-indigo-600"></i> Ringkasan Keranjang
+                    </h3>
+
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between text-slate-600">
+                            <span>Kategori:</span>
+                            <span id="summaryCategory" class="font-semibold text-slate-800">-</span>
+                        </div>
+                        <div class="flex justify-between text-slate-600">
+                            <span>Layanan:</span>
+                            <span id="summaryProvider" class="font-semibold text-slate-800">-</span>
+                        </div>
+                        <div class="flex justify-between text-slate-600">
+                            <span>Tujuan:</span>
+                            <span id="summaryTarget" class="font-semibold text-slate-800 break-all text-right">-</span>
+                        </div>
+                        <div id="summaryNicknameRow" class="flex justify-between text-slate-600 hidden">
+                            <span>Nickname/Server:</span>
+                            <span id="summaryNickname" class="font-semibold text-slate-800">-</span>
+                        </div>
+                        <div class="flex justify-between text-slate-600">
+                            <span>Nominal Saldo:</span>
+                            <span id="summaryNominal" class="font-semibold text-slate-800">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-slate-600">
+                            <span>Biaya Admin:</span>
+                            <span id="summaryFee" class="font-semibold text-indigo-600">Rp 3.000</span>
+                        </div>
+                        <div class="flex justify-between text-slate-600">
+                            <span>Diskon Promo:</span>
+                            <span id="summaryDiscount" class="font-semibold text-emerald-600">- Rp 0</span>
+                        </div>
+                        <div class="flex justify-between text-slate-600">
+                            <span>Catatan:</span>
+                            <span id="summaryNotes" class="font-semibold text-slate-800 truncate max-w-[140px]">-</span>
+                        </div>
+                        <hr class="border-slate-100 my-2">
+                        <div class="flex justify-between text-base font-bold text-slate-900">
+                            <span>Total Pembayaran:</span>
+                            <span id="summaryTotal" class="text-indigo-600">Rp 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Pesan WA dengan Proteksi Loading/Double Click -->
+                <button id="btnSendWA" onclick="sendToWhatsApp()" class="mt-8 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-emerald-200 transition duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i id="btnWaIcon" class="fa-brands fa-whatsapp text-xl"></i>
+                    <span id="btnWaText">Pesan Sekarang (Via WA)</span>
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Live Toast Notification (Social Proof) -->
+    <div id="liveToast" class="fixed bottom-4 left-4 z-50 bg-white/95 backdrop-blur-md border border-indigo-100 shadow-xl rounded-2xl p-3.5 flex items-center gap-3 transition-all duration-500 transform translate-y-24 opacity-0 max-w-xs">
+        <div class="w-9 h-9 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-lg flex-shrink-0">
+            <i class="fa-solid fa-check-circle"></i>
+        </div>
+        <div class="text-xs">
+            <p id="toastText" class="font-bold text-slate-800">Budi (Telkomsel 50k)</p>
+            <p id="toastTime" class="text-slate-500 text-[10px]">Baru saja bertransaksi • Sukses</p>
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        // --- KONFIGURASI SUPABASE ---
+        const SUPABASE_URL = "https://djnmiyuaplxxcogjserd.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqbm1peXVhcGx4eGNvZ2pzZXJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyNDA3NzcsImV4cCI6MjEwMTgxNjc3N30.9_Hm3cF5awmc5fVviSNCqGDnJQNdn_nwnvU3AUoPbtM";
+        const supabaseClient = (typeof supabase !== 'undefined' && SUPABASE_URL.indexOf("YOUR_SUPABASE") === -1) 
+            ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) 
+            : null;
+
+        const defaultSubCategories = {
+            "Pulsa / Paket Data": ["Telkomsel", "Axis", "3 (Three)", "Byu", "Smartfren", "XL", "Indosat"],
+            "Top Up E-Wallet": ["Dana", "Gopay", "OVO", "ShopeePay", "SeaBank"],
+            "Top Up Game": ["Mobile Legends", "Free Fire", "FF MAX", "Roblox", "PUBG Mobile"],
+            "Tukar Cash / Transfer / Tagihan": ["Tukar Cash (QRIS)", "Transfer Bank", "Bayar Tagihan"]
+        };
+
+        const fallbackPromoCodes = {
+            "MANCELLFREE": { type: "free_admin", desc: "Gratis Biaya Admin (Spesial Man Cell)" },
+            "FREEADMIN": { type: "free_admin", desc: "Bebas Biaya Admin" },
+            "ADMINBEBAS": { type: "free_admin", desc: "Promo Bebas Biaya Admin" },
+            "PROMOTOPUP": { type: "free_admin", desc: "Gratis Admin Seluruh Topup" },
+            "MANCELLHEMAT": { type: "free_admin", desc: "Bebas Biaya Admin Hemat" },
+            "MANCELL2026": { type: "free_admin", desc: "Spesial Bebas Admin 2026" }
+        };
+
+        let activeNominalVal = 0;
+        let adminFee = 3000; 
+        let discountVal = 0;
+        let appliedPromoCode = "";
+        let currentPromoObj = null;
+
+        // Kalkulasi Biaya Admin
+        function calculateAdminFee() {
+            const cat = document.getElementById("category").value;
+            const prov = document.getElementById("provider").value;
+
+            if (cat === "Tukar Cash / Transfer / Tagihan") {
+                if (prov === "Tukar Cash (QRIS)" || prov === "Bayar Tagihan") {
+                    adminFee = 2500;
+                } else if (prov === "Transfer Bank") {
+                    adminFee = 3000;
+                } else {
+                    adminFee = 2500; 
+                }
+            } else {
+                adminFee = 3000;
+            }
+
+            recalculateDiscount();
+            updateSummary();
+        }
+
+        // POIN 3: Kalkulasi Ulang Diskon secara Dinamis saat Nominal berubah
+        function recalculateDiscount() {
+            if (!currentPromoObj) {
+                discountVal = 0;
+                return;
+            }
+
+            if (currentPromoObj.type === 'free_admin') {
+                discountVal = adminFee;
+            } else if (currentPromoObj.type === 'fixed') {
+                discountVal = parseFloat(currentPromoObj.value || 0);
+            } else if (currentPromoObj.type === 'percent') {
+                discountVal = Math.round((activeNominalVal * parseFloat(currentPromoObj.value || 0)) / 100);
+            }
+        }
+
+        // Update Subkategori
+        async function updateSubCategories() {
+            const catSelect = document.getElementById("category");
+            const provSelect = document.getElementById("provider");
+            const selectedCat = catSelect.value;
+            const gameExtraField = document.getElementById("gameExtraField");
+            const summaryNicknameRow = document.getElementById("summaryNicknameRow");
+
+            provSelect.innerHTML = '<option value="">-- Pilih Provider / Layanan --</option>';
+
+            if (selectedCat) {
+                let list = [...(defaultSubCategories[selectedCat] || [])];
+
+                if (supabaseClient) {
+                    try {
+                        const { data: dbServices } = await supabaseClient.from('services').select('name').eq('category', selectedCat);
+                        if (dbServices && dbServices.length > 0) {
+                            dbServices.forEach(s => {
+                                if (!list.includes(s.name)) list.push(s.name);
+                            });
+                        }
+                    } catch (e) {
+                        console.error("Error fetching services from Supabase:", e);
+                    }
+                }
+
+                list.forEach(item => {
+                    const option = document.createElement("option");
+                    option.value = item;
+                    option.textContent = item;
+                    provSelect.appendChild(option);
+                });
+            }
+
+            if (selectedCat === "Top Up Game") {
+                gameExtraField.classList.remove("hidden");
+                summaryNicknameRow.classList.remove("hidden");
+            } else {
+                gameExtraField.classList.add("hidden");
+                summaryNicknameRow.classList.add("hidden");
+            }
+
+            calculateAdminFee();
+        }
+
+        // Custom Nominal dengan POIN 2 (Validasi Minimal 5k) & POIN 3 (Dynamic Recalculate)
+        document.getElementById("customNominal").addEventListener("input", function() {
+            let rawVal = this.value.replace(/\D/g, "");
+            activeNominalVal = parseInt(rawVal) || 0;
+            
+            this.value = rawVal ? parseInt(rawVal).toLocaleString('id-ID') : "";
+
+            // Validasi Minimal 5.000 (Poin 2)
+            const minWarning = document.getElementById("minNominalWarning");
+            if (activeNominalVal > 0 && activeNominalVal < 5000) {
+                minWarning.classList.remove("hidden");
+            } else {
+                minWarning.classList.add("hidden");
+            }
+
+            // Hitung ulang diskon jika ada promo yang aktif (Poin 3)
+            recalculateDiscount();
+            updateSummary();
+        });
+
+        // Auto Detect Provider & Validasi Digit
+        document.getElementById("targetInput").addEventListener("input", function() {
+            const val = this.value.trim();
+            const catSelect = document.getElementById("category");
+            const provSelect = document.getElementById("provider");
+            const badge = document.getElementById("autoDetectBadge");
+            const targetError = document.getElementById("targetError");
+
+            if (val.length > 0 && val.length < 10 && catSelect.value === "Pulsa / Paket Data") {
+                targetError.classList.remove("hidden");
+            } else {
+                targetError.classList.add("hidden");
+            }
+
+            if (val.length >= 4 && (catSelect.value === "" || catSelect.value === "Pulsa / Paket Data")) {
+                const prefix = val.substring(0, 4);
+                let detected = "";
+
+                if (["0811", "0812", "0813", "0821", "0822", "0852", "0853"].includes(prefix)) detected = "Telkomsel";
+                else if (["0814", "0815", "0816", "0855", "0856", "0857", "0858"].includes(prefix)) detected = "Indosat";
+                else if (["0817", "0818", "0819", "0859", "0877", "0878"].includes(prefix)) detected = "XL";
+                else if (["0831", "0832", "0833", "0838"].includes(prefix)) detected = "Axis";
+                else if (["0895", "0896", "0897", "0898", "0899"].includes(prefix)) detected = "3 (Three)";
+                else if (["0881", "0882", "0883", "0888"].includes(prefix)) detected = "Smartfren";
+                else if (["0851"].includes(prefix)) detected = "Byu";
+
+                if (detected !== "") {
+                    catSelect.value = "Pulsa / Paket Data";
+                    updateSubCategories();
+                    provSelect.value = detected;
+                    badge.classList.remove("hidden");
+                }
+            } else {
+                badge.classList.add("hidden");
+            }
+            calculateAdminFee();
+        });
+
+        document.getElementById("nicknameInput").addEventListener("input", updateSummary);
+
+        // Apply Promo
+        async function applyPromo() {
+            const codeInput = document.getElementById("promoInput").value.trim().toUpperCase();
+            const targetInput = document.getElementById("targetInput").value.trim();
+            const msg = document.getElementById("promoMsg");
+
+            if (!codeInput) {
+                msg.textContent = "Masukkan kode promo terlebih dahulu!";
+                msg.className = "text-xs mt-1 font-semibold text-rose-600 block";
+                return;
+            }
+
+            if (!targetInput) {
+                msg.textContent = "Masukkan Nomor/ID Tujuan terlebih dahulu!";
+                msg.className = "text-xs mt-1 font-semibold text-rose-600 block";
+                return;
+            }
+
+            let isUsed = false;
+
+            if (supabaseClient) {
+                const { data: usedRecords } = await supabaseClient.from('used_promos')
+                    .select('*')
+                    .eq('code', codeInput)
+                    .eq('user_target', targetInput);
+
+                if (usedRecords && usedRecords.length > 0) isUsed = true;
+            } else {
+                let usedLocal = JSON.parse(localStorage.getItem("mancell_used_promos") || "[]");
+                if (usedLocal.includes(`${codeInput}_${targetInput}`)) isUsed = true;
+            }
+
+            if (isUsed) {
+                discountVal = 0;
+                appliedPromoCode = "";
+                currentPromoObj = null;
+                msg.textContent = "Kode promo ini sudah pernah digunakan untuk nomor/ID ini!";
+                msg.className = "text-xs mt-1 font-semibold text-rose-600 block";
+                updateSummary();
+                return;
+            }
+
+            let promoData = null;
+
+            if (supabaseClient) {
+                const { data, error } = await supabaseClient.from('promos')
+                    .select('*')
+                    .eq('code', codeInput)
+                    .single();
+                if (!error && data) promoData = data;
+            } else {
+                if (fallbackPromoCodes[codeInput]) {
+                    promoData = {
+                        code: codeInput,
+                        type: fallbackPromoCodes[codeInput].type,
+                        value: 0
+                    };
+                }
+            }
+
+            if (promoData) {
+                appliedPromoCode = promoData.code;
+                currentPromoObj = promoData;
+                recalculateDiscount();
+
+                if (promoData.type === 'free_admin') {
+                    msg.textContent = "Berhasil! Gratis Biaya Admin.";
+                } else if (promoData.type === 'fixed') {
+                    msg.textContent = `Berhasil! Potongan diskon Rp ${discountVal.toLocaleString('id-ID')}.`;
+                } else if (promoData.type === 'percent') {
+                    msg.textContent = `Berhasil! Diskon ${promoData.value}%.`;
+                }
+                msg.className = "text-xs mt-1 font-semibold text-emerald-600 block";
+            } else {
+                discountVal = 0;
+                appliedPromoCode = "";
+                currentPromoObj = null;
+                msg.textContent = "Kode promo tidak valid!";
+                msg.className = "text-xs mt-1 font-semibold text-rose-600 block";
+            }
+
+            updateSummary();
+        }
+
+        function resetForm() {
+            document.getElementById("category").value = "";
+            document.getElementById("targetInput").value = "";
+            document.getElementById("nicknameInput").value = "";
+            document.getElementById("customNominal").value = "";
+            document.getElementById("promoInput").value = "";
+            document.getElementById("notesInput").value = "";
+            document.getElementById("targetError").classList.add("hidden");
+            document.getElementById("minNominalWarning").classList.add("hidden");
+            document.getElementById("autoDetectBadge").classList.add("hidden");
+            
+            const radios = document.querySelectorAll('input[name="payment"]');
+            radios.forEach(r => r.checked = false);
+
+            activeNominalVal = 0;
+            adminFee = 3000;
+            discountVal = 0;
+            appliedPromoCode = "";
+            currentPromoObj = null;
+            document.getElementById("promoMsg").classList.add("hidden");
+
+            updateSubCategories();
+        }
+
+        function updateSummary() {
+            const cat = document.getElementById("category").value || "-";
+            const prov = document.getElementById("provider").value || "-";
+            const target = document.getElementById("targetInput").value || "-";
+            const nickname = document.getElementById("nicknameInput").value || "-";
+            const notes = document.getElementById("notesInput").value || "-";
+
+            document.getElementById("summaryCategory").innerText = cat;
+            document.getElementById("summaryProvider").innerText = prov;
+            document.getElementById("summaryTarget").innerText = target;
+            document.getElementById("summaryNickname").innerText = nickname !== "" ? nickname : "-";
+            document.getElementById("summaryNotes").innerText = notes.trim() !== "" ? notes : "-";
+
+            const formattedNominal = activeNominalVal > 0 ? `Rp ${activeNominalVal.toLocaleString('id-ID')}` : "Rp 0";
+            document.getElementById("summaryNominal").innerText = formattedNominal;
+            document.getElementById("summaryFee").innerText = `Rp ${adminFee.toLocaleString('id-ID')}`;
+            document.getElementById("summaryDiscount").innerText = `- Rp ${discountVal.toLocaleString('id-ID')}`;
+
+            let grandTotal = activeNominalVal > 0 ? (activeNominalVal + adminFee - discountVal) : 0;
+            if (grandTotal < 0) grandTotal = 0;
+
+            document.getElementById("summaryTotal").innerText = grandTotal > 0 ? `Rp ${grandTotal.toLocaleString('id-ID')}` : "Rp 0";
+        }
+
+        document.getElementById("notesInput").addEventListener("input", updateSummary);
+
+        // POIN 5: Send To WhatsApp dengan Proteksi Double Click & Loading State
+        async function sendToWhatsApp() {
+            const cat = document.getElementById("category").value;
+            const prov = document.getElementById("provider").value;
+            const target = document.getElementById("targetInput").value;
+            const nickname = document.getElementById("nicknameInput").value;
+            const notes = document.getElementById("notesInput").value;
+            const payment = document.querySelector('input[name="payment"]:checked')?.value;
+
+            // Validasi kelengkapan data
+            if (!cat || !prov || !target || activeNominalVal <= 0 || !payment) {
+                alert("Harap lengkapi Kategori, Provider, Nomor Tujuan, Nominal, dan Metode Pembayaran!");
+                return;
+            }
+
+            // Validasi Minimal Rp 5.000 saat kirim
+            if (activeNominalVal < 5000) {
+                alert("Mohon maaf, minimal transaksi pemesanan adalah Rp 5.000!");
+                return;
+            }
+
+            // Elemen tombol WA untuk proteksi double-click
+            const btnWA = document.getElementById("btnSendWA");
+            const btnIcon = document.getElementById("btnWaIcon");
+            const btnText = document.getElementById("btnWaText");
+
+            // Set ke status Loading
+            btnWA.disabled = true;
+            btnIcon.className = "fa-solid fa-circle-notch fa-spin text-xl";
+            btnText.innerText = "Memproses...";
+
+            try {
+                // --- HAPUS & CATAT KODE PROMO DI SUPABASE ---
+                if (appliedPromoCode && supabaseClient) {
+                    // 1. Catat ke tabel riwayat used_promos
+                    await supabaseClient.from('used_promos').insert([
+                        { code: appliedPromoCode, user_target: target }
+                    ]);
+
+                    // 2. LANGSUNG HAPUS KODE PROMO DARI TABEL 'promos' DIBATABASE SUPABASE
+                    const { error: deleteErr } = await supabaseClient
+                        .from('promos')
+                        .delete()
+                        .eq('code', appliedPromoCode);
+
+                    if (deleteErr) {
+                        console.error("Gagal menghapus kode promo dari database:", deleteErr);
+                    }
+                }
+
+                const phoneNumber = "6283879457407"; 
+                const formattedPrice = `Rp ${activeNominalVal.toLocaleString('id-ID')}`;
+                let effectiveAdmin = adminFee - discountVal;
+                if (effectiveAdmin < 0) effectiveAdmin = 0;
+
+                let grandTotal = activeNominalVal + effectiveAdmin;
+                if (grandTotal < 0) grandTotal = 0;
+
+                const formattedTotal = `Rp ${grandTotal.toLocaleString('id-ID')}`;
+                const catNote = notes.trim() !== "" ? notes : "-";
+
+                let extraGameInfo = cat === "Top Up Game" ? `*Nickname/Server:* ${nickname || '-'}\n` : "";
+                let promoInfo = appliedPromoCode ? `*Kode Promo Used:* ${appliedPromoCode} (Diskon Rp ${discountVal.toLocaleString('id-ID')})\n` : "";
+
+                // Teks mentah WhatsApp
+                const rawMessage = `Halo Admin Man Cell, saya ingin memesan:\n\n` +
+                                   `*Kategori:* ${cat}\n` +
+                                   `*Layanan:* ${prov}\n` +
+                                   `*Tujuan/No HP/ID:* ${target}\n` +
+                                   (extraGameInfo ? `${extraGameInfo}` : "") +
+                                   `*Nominal:* ${formattedPrice}\n` +
+                                   `*Biaya Admin:* Rp ${effectiveAdmin.toLocaleString('id-ID')}\n` +
+                                   (promoInfo ? `${promoInfo}` : "") +
+                                   `*Total Pembayaran:* ${formattedTotal}\n` +
+                                   `*Catatan:* ${catNote}\n` +
+                                   `*Metode Pembayaran:* ${payment}\n\n` +
+                                   `Mohon diproses, terima kasih!`;
+
+                // Buka WhatsApp
+                window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(rawMessage)}`, '_blank');
+
+                // Reset state promo di tampilan form setelah pesanan dikirim
+                appliedPromoCode = "";
+                currentPromoObj = null;
+                discountVal = 0;
+                const promoInputEl = document.getElementById("promoInput");
+                const promoMsgEl = document.getElementById("promoMsg");
+                if (promoInputEl) promoInputEl.value = "";
+                if (promoMsgEl) promoMsgEl.classList.add("hidden");
+                
+                if (typeof updateSummary === "function") {
+                    updateSummary();
+                }
+
+            } catch (err) {
+                console.error("Error processing order:", err);
+            } finally {
+                // Mengembalikan status tombol setelah 2 detik
+                setTimeout(() => {
+                    btnWA.disabled = false;
+                    btnIcon.className = "fa-brands fa-whatsapp text-xl";
+                    btnText.innerText = "Pesan Sekarang (Via WA)";
+                }, 2000);
+            }
+        }
+
+        // POIN 4: Live Toast Notification Simulation dengan Waktu Dinamis
+        const fakeData = [
+            { name: "Rizky", item: "Pulsa Telkomsel 20k" },
+            { name: "Siti", item: "Dana 50k" },
+            { name: "Dimas", item: "ML 86 Diamonds" },
+            { name: "Aris", item: "Gopay 100k" },
+            { name: "Andi", item: "Free Fire 140 Diamonds" },
+            { name: "Fajri", item: "Tukar Cash 100k" }
+        ];
+
+        const timeVariants = ["Baru saja", "1 menit yang lalu", "2 menit yang lalu", "3 menit yang lalu"];
+
+        function showToast() {
+            const toast = document.getElementById("liveToast");
+            const random = fakeData[Math.floor(Math.random() * fakeData.length)];
+            const randomTime = timeVariants[Math.floor(Math.random() * timeVariants.length)];
+            
+            document.getElementById("toastText").innerText = `${random.name} (${random.item})`;
+            document.getElementById("toastTime").innerText = `${randomTime} • Sukses`;
+            
+            toast.classList.remove("translate-y-24", "opacity-0");
+            
+            setTimeout(() => {
+                toast.classList.add("translate-y-24", "opacity-0");
+            }, 4000);
+        }
+
+        setTimeout(() => {
+            showToast();
+            setInterval(showToast, 11000);
+        }, 3000);
+    </script>
+</body>
+</html>
